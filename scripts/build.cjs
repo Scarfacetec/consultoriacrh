@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist');
-const files = ['index.html', 'banner.jpg', 'logotipo.jpeg', 'trabalhadores.jpg', '_headers'];
+const files = ['index.html', 'banner.jpg', 'logotipo.jpeg', 'trabalhadores.jpg', 'compartilhamento-crh-v2.jpg', 'robots.txt', '_headers'];
 for (const file of files) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Arquivo ausente: ${file}`);
 }
