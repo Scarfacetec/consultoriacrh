@@ -38,6 +38,11 @@
 .ambient-lines path,.ambient-lines circle{vector-effect:non-scaling-stroke}
 @media(max-width:700px){.ambient-blue{opacity:.13}.ambient-purple{opacity:.19}.ambient-lines{inset:-70px -180px}}
 @media(prefers-reduced-motion:reduce){.ambient-blue,.ambient-purple{transform:none}}
+.neon-trace{stroke:#9250da;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:75 925;filter:drop-shadow(0 0 2px #9c60dc) drop-shadow(0 0 5px #9c60dc88);animation:neon-flow var(--neon-duration,18s) linear infinite;animation-delay:var(--neon-delay,0s);animation-play-state:paused}
+.ambient-blue .neon-trace{stroke:#457fe0;filter:drop-shadow(0 0 2px #6191e3) drop-shadow(0 0 5px #6191e388);animation-direction:reverse}
+.neon-visible .neon-trace{animation-play-state:running}
+@keyframes neon-flow{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.neon-trace{display:none;animation:none}}
 </style>
 </head>
 <body>
@@ -128,9 +133,33 @@ lineSections.forEach((section,index)=>{
             </g>
         </g>
     </svg>`;
+    decoration.querySelectorAll('.ambient-blue, .ambient-purple').forEach(group=>{
+        [...group.querySelectorAll('path')].forEach((line,lineIndex)=>{
+            if(lineIndex%2!==0)return;
+            const trace=line.cloneNode(false);
+            trace.classList.add('neon-trace');
+            trace.setAttribute('pathLength','1000');
+            trace.style.setProperty('--neon-delay',`${-(index*3+lineIndex*2)}s`);
+            trace.style.setProperty('--neon-duration',`${18+lineIndex*2}s`);
+            group.append(trace);
+        });
+    });
     section.prepend(decoration);
 });
 const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
+const neonObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>entry.target.classList.toggle('neon-visible',entry.isIntersecting));
+},{rootMargin:'60px'});
+lineSections.forEach(section=>neonObserver.observe(section));
+document.addEventListener('visibilitychange',()=>{
+    lineSections.forEach(section=>{
+        if(document.hidden)section.classList.remove('neon-visible');
+        else{
+            const rect=section.getBoundingClientRect();
+            section.classList.toggle('neon-visible',rect.bottom>-60 && rect.top<window.innerHeight+60);
+        }
+    });
+});
 let linesFrame=0;
 function updateLines(){
     linesFrame=0;
