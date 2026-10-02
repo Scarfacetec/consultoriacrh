@@ -1,0 +1,7 @@
+{
+  "name": "consultoriacrh",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site institucional da CRH Consultoria em Recursos Humanos",
+  "scripts": { "build": "node scripts/build.cjs" }
+}
